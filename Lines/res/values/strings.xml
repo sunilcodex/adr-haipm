@@ -2,4 +2,5 @@
 <resources>
     <string name="hello">Hello World, Lines!</string>
     <string name="app_name">AnNamLines</string>
+<string name="Line_Status"></string>
 </resources>
