@@ -14,10 +14,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 import annam.game.table.TableGame;
+import annam.game.table.TableItem;
 
 public class LinesView extends View {
 	private final Paint mPaint = new Paint();
 	private Paint mLinePaint = new Paint();
+	private Paint mNextPaint = new Paint();
 	
 	//Game constant
 	private final float ANLINES_TABLE_SIZE = 9.0f;
@@ -50,10 +52,10 @@ public class LinesView extends View {
 	private TextView mStatusText;
 	private static float mItemSize;
 	private static float mItemSmallHeight;
-	
-	private static int mPositionMove;
-	
+	private static float mItemNextHeight;
+			
 	private Bitmap mBitmapList[];
+	private Bitmap mBitmapNextList[];
 	private Bitmap mSelectedBitmapList[];
 	public LinesView(Context context, AttributeSet attrs){
 		super(context, attrs);
@@ -63,22 +65,24 @@ public class LinesView extends View {
 		setBackgroundColor(Color.WHITE);
 		
 		mBitmapList = new Bitmap[ANLINES_MAX_INSTANT];
+		mBitmapNextList = new Bitmap[ANLINES_MAX_INSTANT];
 		mSelectedBitmapList = new Bitmap[ANLINES_MAX_INSTANT];
+		
 		mTalbeGame = new TableGame((int)ANLINES_TABLE_SIZE, (int)ANLINES_TABLE_SIZE, ANLINES_MAX_INSTANT);
 		mTalbeGame.RandomsTableContent(ANLINES_START_GAME_NUMBER);
-		
+		mTalbeGame.NextTableContent(ANLINES_NEXT_NUMBER);
 		update();
 	}
 	public LinesView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        
+         
        
 	}
 	
 	public boolean onTouchEvent(MotionEvent event) {
 		int x = (int)event.getX();
 		int y = (int)event.getY();
-		if (event.getAction() == MotionEvent.ACTION_DOWN)
+		if (event.getAction() == MotionEvent.ACTION_UP)
 		{
 			if (setSelectedCell(x, y)){
 				mIsSelected = true;
@@ -111,7 +115,7 @@ public class LinesView extends View {
 				}
 				else
 				{
-					//TODO notify moving error
+					//TODO notify moving error "incorrect moving"
 				}
 			}
 			return false;
@@ -140,6 +144,7 @@ public class LinesView extends View {
         
         mItemSize = mCellWidth - ANLINES_PADDING_CELL;
         mItemSmallHeight = mItemSize*3/4;
+        mItemNextHeight = mItemSize/2;
         //measure BALL size
         loadImage();
 	}
@@ -149,12 +154,17 @@ public class LinesView extends View {
      * 
      * @param key
      * @param tile
+     * @author HaiPM
+     * Load current bitmap
+     * Load selected bitmap
+     * Load next bitmap
      */
     public void loadImage() {
     	    	
     	Resources r = this.getContext().getResources();
     	for (int i =0; i<ANLINES_MAX_INSTANT; i++)
     	{
+    		//Load current bitmap
 	    	Drawable draw = r.getDrawable((R.drawable.color0)+i);
 	    	    	
 	        Bitmap bitmap = Bitmap.createBitmap((int)mItemSize, (int)mItemSize, Bitmap.Config.ARGB_8888);
@@ -164,6 +174,7 @@ public class LinesView extends View {
 	        
 	        mBitmapList[i] = bitmap; 
 	        
+	        //Load selected bitmap
 	        Drawable selectedDraw = r.getDrawable((R.drawable.color0)+i);
 	        
 	        Bitmap selectedBitmap = Bitmap.createBitmap((int)mItemSize, (int)mItemSmallHeight, Bitmap.Config.ARGB_8888);
@@ -172,6 +183,15 @@ public class LinesView extends View {
 	        selectedDraw.draw(selectedCanvas); 
 	        
 	        mSelectedBitmapList[i] = selectedBitmap;
+	        //Load next bitmap
+	        Drawable NexDraw = r.getDrawable((R.drawable.color0)+i);
+	        
+	        Bitmap NexBitmap = Bitmap.createBitmap((int)mItemNextHeight, (int)mItemNextHeight, Bitmap.Config.ARGB_8888);
+	        Canvas NexCanvas = new Canvas(selectedBitmap);
+	        NexDraw.setBounds(ANLINES_PADDING_CELL, ANLINES_PADDING_CELL, (int)mItemNextHeight, (int)mItemNextHeight);
+	        NexDraw.draw(NexCanvas); 
+	        
+	        mBitmapNextList[i] = NexBitmap;
     	}
     }
 	@Override
@@ -201,6 +221,16 @@ public class LinesView extends View {
 		mStatusText.setText(R.string.app_name);
 		mStatusText.setVisibility(VISIBLE);
 	}
+	
+	/**
+     * Draw Lines table contain
+     * @param canvas to draw
+     * @author HaiPM
+     * Draw selected item
+     * Draw current items
+     * Draw next items
+     */
+	
 	private void DrawLinesTable(Canvas canvas){
 		for (int i = 0; i<(int)ANLINES_TABLE_SIZE; i++)
 			for (int j = 0; j<(int)ANLINES_TABLE_SIZE; j++)
@@ -208,18 +238,35 @@ public class LinesView extends View {
 				int color = mTalbeGame.GetInstantAt(i, j);
 				if (color>0 )
 				{
-					if(mIsSelected == true && mIsSelectedSmall == true && i == mSelectCellX && j == mSelectCellY)
+					if(		mIsSelected == true && 
+							mIsSelectedSmall == true && 
+							i == mSelectCellX && 
+							j == mSelectCellY)
+						//Draw selected item
 						canvas.drawBitmap(	mSelectedBitmapList[color], 
 							0 + ANLINES_PADDING_CELL + i * mCellWidth,
 							0 + ANLINES_PADDING_CELL + j * mCellHeight + mCellHeight - mItemSmallHeight,
 			        		mPaint);
-					else
+					else //Draw current items
 						canvas.drawBitmap(	mBitmapList[color], 
 								0 + ANLINES_PADDING_CELL + i * mCellWidth,
 								0 + ANLINES_PADDING_CELL + j * mCellHeight,
 				        		mPaint);
 				}
 			}
+		//Draw next items 
+		//TODO still not draw next ball yet
+		
+		for (int k = 0; k < ANLINES_NEXT_NUMBER; k++)
+		{
+			TableItem temp = new TableItem();
+			temp = mTalbeGame.GetNextItem(k);
+			canvas.drawBitmap(	mBitmapNextList[temp.value], 
+					0 + ANLINES_PADDING_CELL + mCellWidth/2 + temp.x * mCellWidth,
+					0 + ANLINES_PADDING_CELL + mCellHeight/2 + temp.y * mCellHeight,
+					mNextPaint);
+			
+		}
 	}
 	@Override
     protected void onDraw(Canvas canvas) {
@@ -260,7 +307,10 @@ public class LinesView extends View {
 				mTalbeGame.ClearValidLines();
 			}
 			else
+			{
+				mTalbeGame.UpdateNextTableContent(ANLINES_NEXT_NUMBER);
 				mTalbeGame.NextTableContent(ANLINES_NEXT_NUMBER);
+			}
 			
 		}
 		if (mIsTobeClear == true){		
