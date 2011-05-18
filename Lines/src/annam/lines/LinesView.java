@@ -23,7 +23,7 @@ public class LinesView extends View {
 	
 	//Game constant
 	private final float ANLINES_TABLE_SIZE = 9.0f;
-	private final int ANLINES_PADDING_CELL = 3;
+	private final int ANLINES_PADDING_CELL = 1;
 	private final int ANLINES_MAX_INSTANT = 8;
 	private final int ANLINES_START_GAME_NUMBER = 5;
 	private final int ANLINES_NEXT_NUMBER = 3;
@@ -184,14 +184,15 @@ public class LinesView extends View {
 	        
 	        mSelectedBitmapList[i] = selectedBitmap;
 	        //Load next bitmap
-	        Drawable NexDraw = r.getDrawable((R.drawable.color0)+i);
 	        
-	        Bitmap NexBitmap = Bitmap.createBitmap((int)mItemNextHeight, (int)mItemNextHeight, Bitmap.Config.ARGB_8888);
-	        Canvas NexCanvas = new Canvas(selectedBitmap);
-	        NexDraw.setBounds(ANLINES_PADDING_CELL, ANLINES_PADDING_CELL, (int)mItemNextHeight, (int)mItemNextHeight);
-	        NexDraw.draw(NexCanvas); 
+	        Drawable NextDraw = r.getDrawable((R.drawable.color0)+i);
 	        
-	        mBitmapNextList[i] = NexBitmap;
+	        Bitmap NextBitmap = Bitmap.createBitmap((int)mItemNextHeight, (int)mItemNextHeight, Bitmap.Config.ARGB_8888);
+	        Canvas NextCanvas = new Canvas(NextBitmap);
+	        NextDraw.setBounds(ANLINES_PADDING_CELL, ANLINES_PADDING_CELL, (int)mItemNextHeight, (int)mItemNextHeight);
+	        NextDraw.draw(NextCanvas); 
+	        
+	        mBitmapNextList[i] = NextBitmap;
     	}
     }
 	@Override
@@ -255,15 +256,14 @@ public class LinesView extends View {
 				}
 			}
 		//Draw next items 
-		//TODO still not draw next ball yet
-		
+				
 		for (int k = 0; k < ANLINES_NEXT_NUMBER; k++)
-		{
+		{ 
 			TableItem temp = new TableItem(); 
 			temp = mTalbeGame.GetNextItem(k);
 			canvas.drawBitmap(	mBitmapNextList[temp.value], 
-					0 + ANLINES_PADDING_CELL + mCellWidth/2 + temp.x * mCellWidth,
-					0 + ANLINES_PADDING_CELL + mCellHeight/2 + temp.y * mCellHeight,
+					ANLINES_PADDING_CELL + mCellWidth/5 + temp.x * mCellWidth,
+					ANLINES_PADDING_CELL + mCellHeight/5 + temp.y * mCellHeight,
 					mNextPaint);
 			
 		}
@@ -286,7 +286,7 @@ public class LinesView extends View {
 			float y = r * mCellHeight + paddingTop;
 			canvas.drawLine(paddingLeft, y, mTableSize, y, mLinePaint); 
 		}
-		// draw lines ball
+		// draw lines balls
 		DrawLinesTable(canvas); 
 		
 		
