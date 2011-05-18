@@ -132,7 +132,8 @@ public class TableGame {
 	public boolean NextTableContent(int count){
 		
 		int x,y,v;
-		while (count >0)
+		//TODO: this code run not good in end game and not verify game over exception 
+		while (count >0 && (mNonZeroCount + count) < mMaxCount)
 		{
 			x = mGenerator.nextInt(mWidth);
 			y = mGenerator.nextInt(mHeight);
@@ -173,6 +174,7 @@ public class TableGame {
 		//regenerate next items
 		NextTableContent(count);
 		
+		//just restore one time, turn of this flag
 		mCanRestore = false;
 		
 		return true;
@@ -190,12 +192,16 @@ public class TableGame {
 		y = mGenerator.nextInt(mWidth);
 		for (int i = 0; i< count; i++)
 		{
+			//Not generate over table contain
+			if (mNonZeroCount >= mMaxCount) return false;
+			
 			if (mContaint[mNextItems[i].x][mNextItems[i].y] == 0)
 			{//item at ([mNextItems[i].x][mNextItems[i].y]) is zero
 				mContaint[mNextItems[i].x][mNextItems[i].y] = mNextItems[i].value;
 			}
 			else
 			{//item at ([mNextItems[i].x][mNextItems[i].y]) is non zero, re-generate another items
+				//TODO: this code run not good in end game and not verify game over exception 
 				while (mContaint[x][y] != 0)
 				{
 					x = mGenerator.nextInt(mWidth);
@@ -208,6 +214,7 @@ public class TableGame {
 				mContaint[x][y] = v;	
 			}
 			//Increase number of non zero items in table contain 
+			//TODO: not verify game over yet
 			mNonZeroCount++;
 		}
 		return true;
