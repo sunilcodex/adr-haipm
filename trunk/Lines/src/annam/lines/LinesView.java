@@ -259,7 +259,7 @@ public class LinesView extends View {
 		
 		for (int k = 0; k < ANLINES_NEXT_NUMBER; k++)
 		{
-			TableItem temp = new TableItem();
+			TableItem temp = new TableItem(); 
 			temp = mTalbeGame.GetNextItem(k);
 			canvas.drawBitmap(	mBitmapNextList[temp.value], 
 					0 + ANLINES_PADDING_CELL + mCellWidth/2 + temp.x * mCellWidth,
