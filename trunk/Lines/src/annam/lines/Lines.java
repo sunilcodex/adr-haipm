@@ -14,7 +14,7 @@ public class Lines extends Activity {
         setContentView(R.layout.main);
         mView = (LinesView) findViewById(R.id.lines);
         
-        mView.setTextView((TextView) findViewById(R.id.text));
+        //mView.setTextView((TextView) findViewById(R.id.text));
 
     }
 }
