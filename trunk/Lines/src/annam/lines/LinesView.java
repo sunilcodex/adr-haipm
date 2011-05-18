@@ -46,9 +46,6 @@ public class LinesView extends View {
 		
 	private final long mMoveDelay = 500; 
 	
-	private long mLastMove;
-	private boolean mIsRunning = true;
-	
 	private TextView mStatusText;
 	private static float mItemSize;
 	private static float mItemSmallHeight;
@@ -57,6 +54,9 @@ public class LinesView extends View {
 	private Bitmap mBitmapList[];
 	private Bitmap mBitmapNextList[];
 	private Bitmap mSelectedBitmapList[];
+	
+	//private Button mButtonUndo;
+	
 	public LinesView(Context context, AttributeSet attrs){
 		super(context, attrs);
 		setFocusable(true);
@@ -75,8 +75,11 @@ public class LinesView extends View {
 	}
 	public LinesView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-         
-       
+            
+	}
+	
+	public void undo(){
+		mTalbeGame.RestoreTableContent(ANLINES_NEXT_NUMBER);
 	}
 	
 	public boolean onTouchEvent(MotionEvent event) {

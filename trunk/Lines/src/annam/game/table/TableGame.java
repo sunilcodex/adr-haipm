@@ -162,22 +162,26 @@ public class TableGame {
      * Re-generate next items
      */
 	public boolean RestoreTableContent(int count){
-		
-		//restore last moving
-		mContaint[mLastMoveItems[TABLE_GAME_MOVING_FROM].x][mLastMoveItems[TABLE_GAME_MOVING_FROM].y] = mContaint[mLastMoveItems[TABLE_GAME_MOVING_TO].x][mLastMoveItems[TABLE_GAME_MOVING_TO].y];
-		mContaint[mLastMoveItems[TABLE_GAME_MOVING_TO].x][mLastMoveItems[TABLE_GAME_MOVING_TO].y] = 0;
-		//restore last additional items
-		for (int i = 0; i< count; i++)
+		if (mCanRestore == true)
 		{
-			mContaint[mLastGenItems[i].x][mLastGenItems[i].y] = 0;
+			//restore last moving
+			mContaint[mLastMoveItems[TABLE_GAME_MOVING_FROM].x][mLastMoveItems[TABLE_GAME_MOVING_FROM].y] = mContaint[mLastMoveItems[TABLE_GAME_MOVING_TO].x][mLastMoveItems[TABLE_GAME_MOVING_TO].y];
+			mContaint[mLastMoveItems[TABLE_GAME_MOVING_TO].x][mLastMoveItems[TABLE_GAME_MOVING_TO].y] = 0;
+			//restore last additional items
+			for (int i = 0; i< count; i++)
+			{
+				mContaint[mLastGenItems[i].x][mLastGenItems[i].y] = 0;
+			}
+			//regenerate next items
+			NextTableContent(count);
+			
+			//just restore one time, turn of this flag
+			mCanRestore = false;
+			
+			return true;
 		}
-		//regenerate next items
-		NextTableContent(count);
-		
-		//just restore one time, turn of this flag
-		mCanRestore = false;
-		
-		return true;
+		else
+			return false;
 	}
 	/**
      * Update NextItems to TableContain
@@ -187,7 +191,7 @@ public class TableGame {
      *  Update mNextItems into table mContaint
      */
 	public boolean UpdateNextTableContent(int count){
-		int x=0,y=0,v;
+		int x=0,y=0;
 		x = mGenerator.nextInt(mWidth);
 		y = mGenerator.nextInt(mWidth);
 		for (int i = 0; i< count; i++)
@@ -207,11 +211,10 @@ public class TableGame {
 					x = mGenerator.nextInt(mWidth);
 					y = mGenerator.nextInt(mWidth);
 				}
-				v = mGenerator.nextInt(mNumInstant-1)+1;	
 				mNextItems[i].x = x;
 				mNextItems[i].y = y;
-				mNextItems[i].value = v;
-				mContaint[x][y] = v;	
+				//still reuse period generate vale
+				mContaint[x][y] = mNextItems[i].value;	
 			}
 			//Increase number of non zero items in table contain 
 			//TODO: not verify game over yet
@@ -281,10 +284,12 @@ public class TableGame {
 		}
 		if (result == true)
 		{
+			//If exist the way, store the moving trace
 			mLastMoveItems[TABLE_GAME_MOVING_FROM].x = fromX;
 			mLastMoveItems[TABLE_GAME_MOVING_FROM].y = fromY;
 			mLastMoveItems[TABLE_GAME_MOVING_TO].x = toX;
 			mLastMoveItems[TABLE_GAME_MOVING_TO].y = toY;
+			//Turn on this flag to remark ability restoring 
 			mCanRestore = true;
 		}
 		return result;
@@ -359,8 +364,7 @@ public class TableGame {
 	public boolean ValidLines(int validNum){
 		//assure that can't find any valid lines
 		boolean result = false;
-		//can't find any valid lines, hence can restore
-		mCanRestore = true;
+		
 		int i,j,k;
 		
 		//clear the trace finder
@@ -377,7 +381,6 @@ public class TableGame {
 					temp = ValidToRight(i, j, mContaint[i][j]);
 					if( temp >= validNum)
 					{
-						//mCanRestore = false;
 						result = true;
 						for (k=0; k< temp; k++)
 							mFinderTrace[i+k][j] = true;
@@ -385,7 +388,6 @@ public class TableGame {
 					temp = ValidToRightDown(i, j, mContaint[i][j]);
 					if( temp >= validNum)
 					{
-						//mCanRestore = false;
 						result = true;
 						for (k=0; k< temp; k++)
 							mFinderTrace[i+k][j+k] = true;
@@ -394,7 +396,6 @@ public class TableGame {
 					temp = ValidToDownLeft(i, j, mContaint[i][j]);
 					if( temp >= validNum)
 					{
-						//mCanRestore = false;
 						result = true;
 						for (k=0; k< temp; k++)
 							mFinderTrace[i-k][j+k] = true;
@@ -403,21 +404,23 @@ public class TableGame {
 					temp = ValidToDown(i, j, mContaint[i][j]);
 					if( temp >= validNum)
 					{
-						//mCanRestore = false;
 						result = true;
 						for (k=0; k< temp; k++)
 							mFinderTrace[i][j+k] = true;
 					}
 				}
-		if (result == true) mCanRestore = false;
 		return result;
 	}
+	
+	
 	private int ValidToRight(int fromX, int fromY, int value){
 		if ((fromX + 1) < mWidth && mContaint[fromX+1][fromY] == value)
 			return ValidToRight(fromX+1, fromY, value)+1;
 		else
 			return 1;
 	}
+	
+	
 	private int ValidToRightDown(int fromX, int fromY, int value){
 		if ((fromX + 1) < mWidth && (fromY+1) < mHeight && mContaint[fromX+1][fromY+1] == value)
 			return ValidToRightDown(fromX+1, fromY+1, value)+1;
@@ -451,7 +454,8 @@ public class TableGame {
 					mNonZeroCount--;
 					result++;
 				}
-		
+		//After clear, remark that table can't restore 
+		if (result > 0) mCanRestore = false;
 		return result;
 	}
 	public TableItem GetNextItem(int index){
