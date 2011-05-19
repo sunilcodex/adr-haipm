@@ -172,8 +172,8 @@ public class TableGame {
 			{
 				mContaint[mLastGenItems[i].x][mLastGenItems[i].y] = 0;
 			}
-			//regenerate next items
-			NextTableContent(count);
+			//regenerate next items 
+			NextTableContent(count); 
 			
 			//just restore one time, turn of this flag
 			mCanRestore = false;
@@ -202,6 +202,7 @@ public class TableGame {
 			if (mContaint[mNextItems[i].x][mNextItems[i].y] == 0)
 			{//item at ([mNextItems[i].x][mNextItems[i].y]) is zero
 				mContaint[mNextItems[i].x][mNextItems[i].y] = mNextItems[i].value;
+				
 			}
 			else
 			{//item at ([mNextItems[i].x][mNextItems[i].y]) is non zero, re-generate another items
@@ -216,6 +217,9 @@ public class TableGame {
 				//still reuse period generate vale
 				mContaint[x][y] = mNextItems[i].value;	
 			}
+			mLastGenItems[i].x = mNextItems[i].x;
+			mLastGenItems[i].y = mNextItems[i].y;
+			mLastGenItems[i].value = mNextItems[i].value;
 			//Increase number of non zero items in table contain 
 			//TODO: not verify game over yet
 			mNonZeroCount++;
