@@ -168,7 +168,7 @@ public class LinesView extends View {
     	for (int i =0; i<ANLINES_MAX_INSTANT; i++)
     	{
     		//Load current bitmap
-	    	Drawable draw = r.getDrawable((R.drawable.color0)+i);
+	    	Drawable draw = r.getDrawable((R.drawable.circle_0)+i);
 	    	    	
 	        Bitmap bitmap = Bitmap.createBitmap((int)mItemSize, (int)mItemSize, Bitmap.Config.ARGB_8888);
 	        Canvas canvas = new Canvas(bitmap);
@@ -178,7 +178,7 @@ public class LinesView extends View {
 	        mBitmapList[i] = bitmap; 
 	        
 	        //Load selected bitmap
-	        Drawable selectedDraw = r.getDrawable((R.drawable.color0)+i);
+	        Drawable selectedDraw = r.getDrawable((R.drawable.circle_0)+i);
 	        
 	        Bitmap selectedBitmap = Bitmap.createBitmap((int)mItemSize, (int)mItemSmallHeight, Bitmap.Config.ARGB_8888);
 	        Canvas selectedCanvas = new Canvas(selectedBitmap);
@@ -188,7 +188,7 @@ public class LinesView extends View {
 	        mSelectedBitmapList[i] = selectedBitmap;
 	        //Load next bitmap
 	        
-	        Drawable NextDraw = r.getDrawable((R.drawable.color0)+i);
+	        Drawable NextDraw = r.getDrawable((R.drawable.circle_0)+i);
 	        
 	        Bitmap NextBitmap = Bitmap.createBitmap((int)mItemNextHeight, (int)mItemNextHeight, Bitmap.Config.ARGB_8888);
 	        Canvas NextCanvas = new Canvas(NextBitmap);
