@@ -171,6 +171,7 @@ public class TableGame {
 			for (int i = 0; i< count; i++)
 			{
 				mContaint[mLastGenItems[i].x][mLastGenItems[i].y] = 0;
+				mNonZeroCount--;
 			}
 			//regenerate next items 
 			NextTableContent(count); 
