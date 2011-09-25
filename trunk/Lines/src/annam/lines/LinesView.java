@@ -6,10 +6,13 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.YuvImage;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -19,7 +22,13 @@ import annam.game.table.TableItem;
 public class LinesView extends View {
 	private final Paint mPaint = new Paint();
 	private Paint mLinePaint = new Paint();
+	private Paint mGameScorePaint = new Paint();
 	private Paint mNextPaint = new Paint();
+	private Paint mPaintStaticsBacground = new Paint();
+	
+	private Resources mResources;
+	private int mColorStaticsBackground;
+	private int mColorStaticsText;
 	
 	//Game constant
 	private final float ANLINES_TABLE_SIZE = 9.0f;
@@ -43,18 +52,21 @@ public class LinesView extends View {
 	private float mTableSize;
 	private float mCellWidth;
 	private float mCellHeight;
+	private float mStatisticsHeight;
 		
-	private final long mMoveDelay = 500; 
+	private final long mMoveDelay = 5000; 
 	
 	private TextView mStatusText;
 	private static float mItemSize;
 	private static float mItemSmallHeight;
 	private static float mItemNextHeight;
-			
+	
+	private TextView mScoreView;
 	private Bitmap mBitmapList[];
 	private Bitmap mBitmapNextList[];
 	private Bitmap mSelectedBitmapList[];
 	
+	RectF mRectStatics;
 	//private Button mButtonUndo;
 	
 	public LinesView(Context context, AttributeSet attrs){
@@ -71,12 +83,18 @@ public class LinesView extends View {
 		mTalbeGame = new TableGame((int)ANLINES_TABLE_SIZE, (int)ANLINES_TABLE_SIZE, ANLINES_MAX_INSTANT);
 		mTalbeGame.RandomsTableContent(ANLINES_START_GAME_NUMBER);
 		mTalbeGame.NextTableContent(ANLINES_NEXT_NUMBER);
+		
+		mResources = this.getContext().getResources();
+		
+		mColorStaticsBackground = mResources.getColor(R.color.COLOR_STATICS_BACKGROUND);
+		mPaintStaticsBacground.setColor(mColorStaticsBackground);
+		
+		mColorStaticsText = mResources.getColor(R.color.COLOR_STATICS_TEXT);
+		mGameScorePaint.setColor(mColorStaticsText);
+		
 		update();
 	}
-	public LinesView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-            
-	}
+
 	
 	public void undo(){
 		mTalbeGame.RestoreTableContent(ANLINES_NEXT_NUMBER);
@@ -138,8 +156,14 @@ public class LinesView extends View {
 		int width = MeasureSpec.getSize(widthMeasureSpec);
 		int height = MeasureSpec.getSize(heightMeasureSpec);
 				
-		if (width > height) mTableSize = height ; 
-		else mTableSize = width;
+		if (width > height) {
+			mTableSize = height ; 
+			mStatisticsHeight = (width - height)/2; 
+		}
+		else {
+			mTableSize = width;
+			mStatisticsHeight = (height - width)/2;
+		}
 		
 		//measure cell size
 		mCellWidth = (mTableSize - getPaddingLeft() - getPaddingRight()) / ANLINES_TABLE_SIZE; 
@@ -148,8 +172,14 @@ public class LinesView extends View {
         mItemSize = mCellWidth - ANLINES_PADDING_CELL;
         mItemSmallHeight = mItemSize*3/4;
         mItemNextHeight = mItemSize/2;
+        
         //measure BALL size
         loadImage();
+        
+        //measure Game statistics
+        mRectStatics = new RectF(0, mTableSize, mTableSize, mTableSize+mStatisticsHeight);
+        
+        
 	}
 	/**
      * Function to set the specified Drawable as the tile for a particular
@@ -197,13 +227,14 @@ public class LinesView extends View {
 	        
 	        mBitmapNextList[i] = NextBitmap;
     	}
+    	
     }
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		
 		measureViewSize(widthMeasureSpec, heightMeasureSpec);
 		
-		setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
+		setMeasuredDimension((int)mTableSize, (int)(mTableSize + mStatisticsHeight));
 	}
 	public void setTextView(TextView view) {
 		mStatusText = view;
@@ -225,7 +256,28 @@ public class LinesView extends View {
 		mStatusText.setText(R.string.app_name);
 		mStatusText.setVisibility(VISIBLE);
 	}
+	/**
+     * Draw Lines game statistics
+     * @param canvas to draw
+     * @author HaiPM
+     * Draw game score
+     * Draw game time
+     * Draw next items view
+     */
 	
+	private void DrawGameStatistics(Canvas canvas){
+		//TODO on coding
+		
+		//1. Draw background statistics
+		canvas.drawRect(mRectStatics, mPaintStaticsBacground);
+		
+		//2. Draw score
+		
+		mGameScorePaint.setTextSize(mStatisticsHeight/2);
+		Long mGameScore = (long) 99999;
+		canvas.drawText(mGameScore.toString(), 0, mTableSize + mStatisticsHeight, mGameScorePaint);
+		//3. Draw next items
+	}
 	/**
      * Draw Lines table contain
      * @param canvas to draw
@@ -291,15 +343,19 @@ public class LinesView extends View {
 		}
 		// draw lines balls
 		DrawLinesTable(canvas); 
+		/** draw game statistics 
+		 * TODO draw time, score, next color
+		 */
+		DrawGameStatistics(canvas);
 		
 		
 	}
 	public void update() {
 		//Selected cell animation update
-		mIsSelectedSmall = !mIsSelectedSmall;
+		mIsSelectedSmall = !mIsSelectedSmall; 
 		
 		//Moving cell animation update
-		if (mIsMoving == true){
+		if (mIsMoving == true){ 
 			mTalbeGame.SetInstantAt(mDestinationCellX, mDestinationCellY, mTalbeGame.GetInstantAt(mSelectCellX, mSelectCellY));
 			mTalbeGame.SetInstantAt(mSelectCellX, mSelectCellY, 0);
 			mIsMoving = false;
