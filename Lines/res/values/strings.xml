@@ -4,4 +4,6 @@
     <string name="app_name">AnNamLines</string>
 <string name="Line_Status"></string>
 <string name="Button_Undo">undo</string>
+<string name="game_score">score</string>
+<string name="game_time">time</string>
 </resources>

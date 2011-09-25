@@ -1,38 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    
-    >
-	<annam.lines.LinesView 
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <annam.lines.LinesView 
 		android:id="@+id/lines"
-		android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+		android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_alignParentTop="true"
         android:background ="#ffffffff"
         android:keepScreenOn="true" />
-    <RelativeLayout
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent" >
-		
-		<TextView
-		 android:id="@+id/text"
-			android:text="@string/Line_Status"
-			android:visibility="visible"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerInParent="true"
-			android:gravity="center_horizontal"
-			android:textColor="#ff8888ff"
-			android:textSize="24sp"/>
-		
-	</RelativeLayout>
-	<Button 
-		android:text="@string/Button_Undo" 
-		android:layout_width="wrap_content" 
-		android:layout_height="wrap_content" 
-		android:layout_gravity="bottom|right"
-		android:id="@+id/ButtonUndo">
+    <TableLayout 
+    	android:layout_height="match_parent" 
+    	android:id="@+id/tableLayout1" 
+    	android:layout_below="@id/lines" 
+    	android:background ="#ffffff00"
+    	android:stretchColumns="1"
+    	android:layout_width="match_parent">
+    	<View android:layout_height="2px" android:background="#0000FF" />
+        <TableRow 
+        	android:layout_width="match_parent" 
+        	android:layout_height="wrap_content" 
+        	android:id="@+id/tableRow1" 
+        	android:layout_gravity="right">
+            <ImageButton android:layout_height="wrap_content" android:id="@+id/ButtonNew" android:layout_width="wrap_content" android:src="@drawable/edit_new"></ImageButton>
+            <ImageButton android:layout_height="wrap_content" android:src="@drawable/edit_undo_8" android:layout_width="wrap_content" android:id="@+id/ButtonUndo" android:layout_gravity="right"></ImageButton>
+        </TableRow>
+    </TableLayout>
+    
 	
-	</Button>
-	
-</FrameLayout>
+</RelativeLayout>
